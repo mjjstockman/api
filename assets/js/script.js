@@ -11,6 +11,7 @@ const resultsModal = new bootstrap.Modal(document.getElementById("resultsModal")
 document.getElementById("status").addEventListener("click", e => getStatus(e));
 
 
+
 // need to make a GET request to API URL with API Key
 // use async function to handle the promise, instead of chaining .then()'s...
 async function getStatus(e) {
@@ -24,7 +25,19 @@ async function getStatus(e) {
     // once promises have been fullfilled check if the response is ok, ie, 
     // 200 http status code
     if (response.ok) {
-        console.log(data.expiry);
+        displayStatus(data);
+    } else {
+        throw new Error(data.error);
     }
 }
 
+function displayStatus(data) {
+
+    let heading = "API Key Status";
+    let results = "Your key is valid until";
+    results += ` ${data.expiry}`;
+
+    document.getElementById("resultsModalTitle").innerText = heading;
+    document.getElementById("results-content").innerText = results;
+    resultsModal.show();
+}
