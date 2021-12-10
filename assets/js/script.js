@@ -11,10 +11,30 @@ const resultsModal = new bootstrap.Modal(document.getElementById("resultsModal")
 document.getElementById("status").addEventListener("click", e => getStatus(e));
 document.getElementById("submit").addEventListener("click", e => postForm(e));
 
+// the API states the data should be given in a commar seperated list
+// use built in formData object method entries to do this
+function processOptions(form) {
+    let optArray = [];
+
+    // use FormData entries method in a loop
+    for (let entry of form.entries()) {
+        // push them into temporary array (if key value is options)
+        if (entry[0] === "options") {
+            optArray.push(entry[1]);
+        }
+    }
+    form.delete("options");
+    // append new options and use join to convert to string (a comma seperated list)
+    form.append("options", optArray.join());
+    return form;
+}
+
+
+
 async function postForm(e) {
     // use JS interface FormData to get all form fields from #checksform
-    //  and return as an object
-    const form = new FormData(document.getElementById("checksform"));
+    //  and return as an object.  call processOptions on FormData
+    const form = processOptions(new FormData(document.getElementById("checksform")));
 
     // use formData default method of entries() in a loop to check the the 
     // formData properties
