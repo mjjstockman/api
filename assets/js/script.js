@@ -4,13 +4,59 @@ const API_URL = "https://ci-jshint.herokuapp.com/api";
 const resultsModal = new bootstrap.Modal(document.getElementById("resultsModal"));
 
 
-// on click, call the git function getStatus, pass in e (which is the event 
+// on click, call the function getStatus, pass in e (which is the event 
 // object).
 // getStatus is not used here, but it's good practive to pass the event
 // object (e), to the handler function
 document.getElementById("status").addEventListener("click", e => getStatus(e));
+document.getElementById("submit").addEventListener("click", e => postForm(e));
+
+async function postForm(e) {
+    // use JS interface FormData to get all form fields from #checksform
+    //  and return as an object
+    const form = new FormData(document.getElementById("checksform"));
+
+    // use formData default method of entries() in a loop to check the the 
+    // formData properties
+    // for (let entry of form.entries()) {
+    //     console.log(entry);
+    // }
 
 
+    // pass the form data object to fetch POST request
+    // use await fetch because it returns a promise
+    const response = await fetch(API_URL, {
+                                method: "POST",
+                                headers: {
+                                    "Authorization": API_KEY,
+        },
+    // add the form object to the body of POST request
+                                body: form
+    });
+
+    // now need to convert form data into json and display the data
+    // response.json is a promise so need to use await
+    const data = await response.json();
+
+    // if response.ok is set to True...
+    if (response.ok) {
+        displayErrors(data);
+    } else {
+        // if not, throw an error with the error message
+        throw new Error(data.error);
+    }
+}
+
+function displayErrors(data) {
+    // set the heading
+    let heading = `JSHint Results for ${data.file}`;
+
+    if (data.total_errors === 0) {
+        results = `<div>Total Errors:`
+    }
+}
+
+// qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
 
 // need to make a GET request to API URL with API Key
 // use async function to handle the promise, instead of chaining .then()'s...
